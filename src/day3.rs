@@ -6,17 +6,62 @@ struct Counter {
 }
 
 pub fn run() {
-    let content = fs::read_to_string("./input/day3/actual_input.txt")
+    let content = fs::read_to_string("./input/day3/test_input.txt")
         .expect("Something went wrong");
     
     let lines: Vec<&str> = content.split("\n").collect();
-    let rating = find_life_support_rating(lines);
-    // let (gamma, epsilon) = parse_input(lines);
-    // let power_consumpsion = gamma * epsilon;
 
-    println!("rating: {}", rating);
+    let power_consumpsion = find_power_comsumpsion(lines.to_vec());
+    let life_support_rating = find_life_support_rating(lines.to_vec());
 
-    // println!("{} * {} = {}", gamma, epsilon, power_consumpsion);
+    assert_eq!(power_consumpsion, 198);
+    println!("Power consumpsion: {}", power_consumpsion);
+
+    assert_eq!(life_support_rating, 230);
+    println!("Life support rating: {}", life_support_rating);
+}
+
+fn find_power_comsumpsion(lines: Vec<&str>) -> u32 {
+    let (gamma, epsilon) = find_gamma_and_epsilon(lines);
+    return gamma * epsilon;
+}
+
+fn find_gamma_and_epsilon(lines: Vec<&str>) -> (u32, u32) {
+    let mut gamma: String = String::new();
+    
+    // Loop over every position in the lines
+    let mut i = 0;
+    while i < lines[0].len() {
+        // Count how many 1s and 0s there are in the current position
+        let count = count_position(&lines, i);
+
+        // Add the corrisponding character to the gamma string
+        gamma.push(if count.ones >= count.zeros { '1' } else { '0' });
+
+        i += 1;
+    }
+
+    let epsilon = invert(&gamma);
+
+    return (
+        binary_string_to_u32(gamma),
+        binary_string_to_u32(epsilon) 
+    );
+}
+
+fn invert(input: &String) -> String {
+    let mut output = String::new();
+
+    let mut i = 0;
+    while i < input.len() {
+        let character = input.chars().nth(i).expect("Invalid position");
+
+        output.push(if character == '1' { '0' } else { '1' });
+
+        i += 1;
+    }
+
+    return output;
 }
 
 fn find_life_support_rating(lines: Vec<&str>) -> u32 {
@@ -43,7 +88,7 @@ fn calculate_rating(l: Vec<&str>, target_ones: bool) -> u32 {
         filter_position(&mut lines, position, target_char);
 
         if lines.len() == 1 {
-            return binary_string_to_u32(lines[0]);
+            return binary_string_to_u32(String::from(lines[0]));
         }
 
         position += 1;
@@ -89,76 +134,7 @@ fn filter_position(lines: &mut Vec<&str>, position: usize, character: char) {
     }
 }
 
-// fn parse_input(lines: Vec<&str>) -> (u32, u32) {
-//     let mut gamma: String = String::new();
-//     let mut epsilon: String = String::new();
-    
-//     let mut i = 0;
-//     while i < lines[0].len() {
-//         let mut counter = Counter {
-//             zeros: 0,
-//             ones: 0,
-//         };
-
-//         for line in &lines {
-//             let character = line.chars().nth(i).expect("Invalid position");
-
-//             match character {
-//                 '0' => counter.zeros += 1,
-//                 '1' => counter.ones += 1,
-//                 _ => println!("Unmatched character"),
-//             }
-//         }
-
-//         if counter.ones >= counter.zeros {
-//             gamma.push_str("1");
-//             epsilon.push_str("0");
-//         } else {
-//             gamma.push_str("0");
-//             epsilon.push_str("1");
-//         }
-
-//         i += 1;
-//     }
-
-//     return (
-//         binary_string_to_u32(gamma),
-//         binary_string_to_u32(epsilon) 
-//     );
-// }
-
-// fn find_life_support_rating(lines: Vec<&str>) -> u32 {
-//     let mut i = 0;
-
-//     let mut oxygen_rating = lines.to_vec();
-//     let mut co2_scrubber_rating = lines.to_vec();
-
-//     while i < lines[0].len() {
-//         let counter = count_position(&lines, i);
-
-//         let oxygen_char: char;
-//         let co2_char: char;
-
-//         if counter.ones >= counter.zeros {
-//             oxygen_char = '1';
-//             co2_char = '0';
-//         } else {
-//             oxygen_char = '0';
-//             co2_char = '1';
-//         }
-
-//         filter_position(&mut oxygen_rating, i, oxygen_char);
-//         filter_position(&mut co2_scrubber_rating, i, co2_char);
-
-//         i += 1;
-//     }
-
-//     println!("{}, {}", oxygen_rating.len(), co2_scrubber_rating.len());
-
-//     return 0;
-// }
-
-fn binary_string_to_u32(input: &str) -> u32 {
+fn binary_string_to_u32(input: String) -> u32 {
     let mut result: u32 = 0;
     let mut i = 0;
     while i < input.len() {
