@@ -18,4 +18,8 @@ impl Square {
     pub fn get_value(&self) -> u8 {
         return self.value;
     }
+
+    pub fn mark(&mut self) {
+        self.marked = true;
+    }
 }

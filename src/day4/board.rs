@@ -15,7 +15,7 @@ impl Board {
         };
     }
 
-    pub fn from_take(take: impl Iterator<Item = String>) -> Board {
+    pub fn from_take<'a>(take: impl Iterator<Item = &'a String>) -> Board {
         let mut board = Board::new();
 
         for (i, row) in take.enumerate() {
@@ -52,5 +52,15 @@ impl Board {
 
     pub fn get_value(&self, x: usize, y: usize) -> u8 {
         return self.get_square(x, y).get_value();
+    }
+
+    pub fn mark_value(&mut self, value: u8) {
+        let values = &mut self.values;
+
+        for square in values {
+            if square.get_value() == value {
+                square.mark();
+            }
+        }
     }
 }
