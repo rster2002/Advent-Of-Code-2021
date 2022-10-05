@@ -22,8 +22,6 @@ pub fn run() -> Option<()> {
 
     let mut boards: Vec<Board> = vec!();
 
-    // let split_ref = RefCell::new(split);
-
     let mut board_string_buffer: Vec<String> = vec!();
     while let Some(line) = split.next() {
         board_string_buffer.push(line);
@@ -38,7 +36,8 @@ pub fn run() -> Option<()> {
         }
     }
 
-    let mut board_won: Option<usize> = None;
+    // let mut board_won: Option<usize> = None;
+    let mut winning_boards: Vec<usize> = vec!();
     for lucky_number in lucky_numbers {
         for board in &mut boards {
             board.mark_value(lucky_number);
@@ -46,21 +45,22 @@ pub fn run() -> Option<()> {
 
         let mut any_won = false;
         for (i, board) in boards.iter().enumerate() {
-            if board.won() {
-                board_won = Some(i);
-                any_won = true;
+            if board.won() && !winning_boards.contains(&i) {
+                winning_boards.push(i);
             }
         }
 
-        if any_won {
+        if winning_boards.len() == boards.len() {
             break;
         }
     }
 
-    let won_index = board_won.expect("Did not win");
-    let board = &boards[won_index];
+    let last_index = winning_boards[winning_boards.len() - 1];
+    let last_winning_board = &boards[last_index];
 
-    print!("Winning board score: {}", board.get_score());
+    last_winning_board.print();
+
+    println!("Last winning board score: {}", last_winning_board.get_score());
 
     return Some(());
 }
