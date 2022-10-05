@@ -1,56 +1,65 @@
+use crate::day5::helpers::{abs_difference, lowest_of};
 use crate::day5::point::Point;
 
 pub struct Board {
-    positions: [u8; 100],
+    width: u32,
+    height: u32,
+    positions: Vec<u32>,
 }
 
 impl Board {
-    pub fn new() -> Board {
-        return Board {
-            positions: [0; 100],
+    pub fn new(width: u32, height: u32) -> Board {
+        let mut instance = Board {
+            width,
+            height,
+            positions: vec!(),
         };
-    }
 
-    // Helper functions to ensure we don't underflow
-    fn abs_difference_u8(a: u8, b: u8) -> u8 {
-        return if a > b {
-            a - b
-        } else {
-            b - a
+        for _ in 0..(width * height) {
+            instance.positions.push(0);
         }
+
+        return instance;
     }
 
-    pub fn apply_segment(&mut self, start: Point, end: Point) {
-        let difference_x = Board::abs_difference_u8(start.0, end.0);
-        let difference_y = Board::abs_difference_u8(start.1, end.1);
+    pub fn apply_segment(&mut self, start: &Point, end: &Point) {
+        let difference_x = abs_difference(start.x, end.x);
+        let difference_y = abs_difference(start.y, end.y);
+
+        let origin = Point {
+            x: lowest_of(start.x, end.x),
+            y: lowest_of(start.y, end.y)
+        };
 
         if difference_x != 0 {
             for x in 0..difference_x + 1 {
-                println!("{}, {}", x, start.1);
+                self.increase_coords(
+                    (origin.x + x) as usize,
+                    origin.y as usize
+                );
             }
         }
 
-        // for x in 0..difference_x {
-        //     self.increase_coords(x as usize, start.1 as usize);
-        // }
-        //
-        // for y in 0..difference_x {
-        //     self.increase_coords(start.0 as usize, y as usize);
-        // }
-
-        println!("{}, {}", difference_x, difference_y);
+        if difference_y != 0 {
+            for y in 0..difference_y + 1 {
+                self.increase_coords(
+                    origin.x as usize,
+                    (origin.y + y) as usize
+                );
+            }
+        }
     }
 
     pub fn increase_coords(&mut self, x: usize, y: usize) {
-        let index = y * 10 + x;
+        let index = x * self.width as usize + y;
         self.positions[index] += 1;
     }
 
-    pub fn nr_of_points_above_threshold(&self, threshold: u8) -> u8 {
+    pub fn nr_of_points_above_threshold(&self, threshold: u32) -> u32 {
         let mut points = 0;
 
-        for position in self.positions {
-            if position >= threshold {
+        for position in &self.positions {
+            if position >= &threshold {
                 points += 1;
             }
         }
