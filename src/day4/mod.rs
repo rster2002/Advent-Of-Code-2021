@@ -1,6 +1,6 @@
 use std::borrow::BorrowMut;
 use std::cell::RefCell;
-use std::fs;
+use std::{env, fs};
 use std::str::Split;
 use std::iter::Map;
 use crate::day4::board::Board;
@@ -8,7 +8,10 @@ use crate::day4::board::Board;
 mod board;
 
 pub fn run() -> Option<()> {
-    let input_string = fs::read_to_string("input.txt").ok()?;
+    let args: Vec<String> = env::args().collect();
+    let input_file = args.get(1)?;
+
+    let input_string = fs::read_to_string(input_file).ok()?;
 
     let mut split = input_string.split("\n")
         .map(|x| String::from(x));
