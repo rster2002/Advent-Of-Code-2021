@@ -6,12 +6,14 @@ mod square;
 
 pub struct Board {
     values: [Square; 25],
+    last_marked_value: u8,
 }
 
 impl Board {
     pub fn new() -> Board {
         return Board {
             values: [(); 25].map(|_| Square::new()),
+            last_marked_value: 0,
         };
     }
 
@@ -55,6 +57,7 @@ impl Board {
     }
 
     pub fn mark_value(&mut self, value: u8) {
+        self.last_marked_value = value;
         let values = &mut self.values;
 
         for square in values {
@@ -62,5 +65,57 @@ impl Board {
                 square.mark();
             }
         }
+    }
+
+    pub fn is_marked(&self, x: usize, y: usize) -> bool {
+        return self.get_square(x, y).is_marked();
+    }
+
+    pub fn won(&self) -> bool {
+        for y in 0..5 {
+            let passed = self.is_marked(0, y)
+                && self.is_marked(1, y)
+                && self.is_marked(2, y)
+                && self.is_marked(3, y)
+                && self.is_marked(4, y);
+
+            if passed {
+                return true;
+            }
+        }
+
+        for x in 0..5 {
+            let passed = self.is_marked(x, 0)
+                && self.is_marked(x, 1)
+                && self.is_marked(x, 2)
+                && self.is_marked(x, 3)
+                && self.is_marked(x, 4);
+
+            if passed {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    pub fn print(&self) {
+        for x in 0..5 {
+            for y in 0..5 {
+                self.get_square(x, y).print();
+            }
+
+            println!();
+        }
+    }
+
+    pub fn get_score(&self) -> u32 {
+        let unmarked_total = self.values.iter()
+            .filter(|x| !x.is_marked())
+            .map(|x| x.get_value() as u32)
+            .reduce(|a, x| a + x)
+            .expect("Could not reduce iteration");
+
+        return unmarked_total * self.last_marked_value as u32;
     }
 }

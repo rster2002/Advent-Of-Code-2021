@@ -22,4 +22,16 @@ impl Square {
     pub fn mark(&mut self) {
         self.marked = true;
     }
+
+    pub fn is_marked(&self) -> bool {
+        return self.marked;
+    }
+
+    pub fn print(&self) {
+        if self.marked {
+            print!("[{}]", self.value);
+        } else {
+            print!(" {} ", self.value);
+        }
+    }
 }

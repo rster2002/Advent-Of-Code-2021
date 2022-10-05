@@ -35,11 +35,29 @@ pub fn run() -> Option<()> {
         }
     }
 
+    let mut board_won: Option<usize> = None;
     for lucky_number in lucky_numbers {
         for board in &mut boards {
             board.mark_value(lucky_number);
         }
+
+        let mut any_won = false;
+        for (i, board) in boards.iter().enumerate() {
+            if board.won() {
+                board_won = Some(i);
+                any_won = true;
+            }
+        }
+
+        if any_won {
+            break;
+        }
     }
+
+    let won_index = board_won.expect("Did not win");
+    let board = &boards[won_index];
+
+    print!("Winning board score: {}", board.get_score());
 
     return Some(());
 }
