@@ -47,7 +47,6 @@ pub fn run() -> Option<()> {
         board.apply_segment(&start, &end);
     }
 
-    board.print();
     println!("Number of dangers: {}", board.nr_of_points_above_threshold(2));
 
     return Some(());

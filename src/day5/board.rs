@@ -51,7 +51,7 @@ impl Board {
     }
 
     pub fn increase_coords(&mut self, x: usize, y: usize) {
-        let index = x * self.width as usize + y;
+        let index = y * (self.width as usize) + x;
         self.positions[index] += 1;
     }
 
@@ -68,9 +68,10 @@ impl Board {
     }
 
     pub fn print(&self) {
-        for x in 0..10 {
-            for y in 0..10 {
-                let index = y * 10 + x;
+        for x in 0..self.width {
+            for y in 0..self.height {
+                let width = self.width as usize;
+                let index = y as usize * width + x as usize;
                 let value = self.positions[index];
 
                 if value == 0 {

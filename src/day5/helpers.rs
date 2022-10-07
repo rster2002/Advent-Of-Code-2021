@@ -11,7 +11,7 @@ pub fn abs_difference<T: Sub<Output = T> + PartialOrd>(a: T, b: T) -> T {
     }
 }
 
-pub fn lowest_of(a: u32, b: u32) -> u32 {
+pub fn lowest_of<T: PartialOrd>(a: T, b: T) -> T {
     return if a < b {
         a
     } else {

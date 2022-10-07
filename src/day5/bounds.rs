@@ -29,10 +29,18 @@ impl Bounds {
     }
 
     pub fn get_width(&self) -> u32 {
-        return abs_difference(self.top_left.x, self.bottom_right.x) + 1;
+        return self.bottom_right.x + 1;
     }
 
     pub fn get_height(&self) -> u32 {
-        return abs_difference(self.top_left.y, self.bottom_right.y) + 1;
+        return self.bottom_right.y + 1;
+    }
+
+    pub fn get_top_left(&self) -> &Point {
+        return &self.top_left;
+    }
+
+    pub fn get_bottom_right(&self) -> &Point {
+        return &self.bottom_right;
     }
 }
